@@ -3,6 +3,7 @@ import cors from 'cors'
 import fetch from "node-fetch"
 import querystring from 'query-string'
 import { Buffer } from 'buffer'
+
 const clientID = 'c0a1baade757484da9b2fd790d541f4f'
 const clientSecret = '7c4ad0165ce546e098b42e450be697ab'
 const TOKEN_URL = `https://accounts.spotify.com/api/token`
@@ -54,20 +55,22 @@ app.use(express.json())
 
 app.use(cors())
 
+app.use(express.static("dist"))
+
 // app.use(express.urlencoded({ extended: false }))
 
-const PORT = 3000
+const PORT = process.env.PORT || 8080
 
-app.get('/', (req, res) => {
-    console.log('Hello World!')
-    res.send('HELLO WORD')
+app.listen(PORT, () => {
+    console.log('App listening on port' + PORT + '!')
 })
 
-app.get('/test', (req, res) => {
+
+app.get('/api/test', (req, res) => {
     res.send('HELLO TEST')
 })
 
-app.post('/accessTokenTest', (req, res) => {
+app.post('/api/accessTokenTest', (req, res) => {
     const refToken = req.body.refreshToken
 
     //console.log('hello' + refToken)
@@ -75,11 +78,7 @@ app.post('/accessTokenTest', (req, res) => {
 
 })
 
-app.get('/spotifyInfo/', (req, res) => {
+app.get('/api/spotifyInfo/', (req, res) => {
     const rTok = req.query.rTok
     songHandler(rTok).then(resp => res.send(resp))
-})
-
-app.listen(PORT, () => {
-    console.log('App listening on port' + PORT + '!')
 })

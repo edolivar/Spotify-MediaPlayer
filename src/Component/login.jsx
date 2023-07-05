@@ -38,7 +38,6 @@ function Login({ history }) {
 
             const authToken = window.location.href.toString().split('?')[1].split('=')[1]
             const rToken = await Refresh_Key(authToken, URI, basicAuth)
-            // console.log(rToken)
 
             // const resp = await window.fetch('http://localhost:3000/accessTokenTest', {
             //     method: 'POST',

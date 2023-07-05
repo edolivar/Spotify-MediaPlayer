@@ -18,7 +18,7 @@ function SongDisplay({ history }) {
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            const spotInfo = await window.fetch(`http://localhost:3000/spotifyInfo/?rTok=${rTok}`, {
+            const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
                 method: 'GET',
             })
 
@@ -30,7 +30,7 @@ function SongDisplay({ history }) {
     useEffect(() => {
         const setUp = async () => {
             if (rTok !== undefined) {
-                const spotInfo = await window.fetch(`http://localhost:3000/spotifyInfo/?rTok=${rTok}`, {
+                const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
                     method: 'GET',
                 })
 
@@ -45,7 +45,7 @@ function SongDisplay({ history }) {
     const skippingSong = () => {
         skipCurrentSong(rTok)
         setTimeout(async () => {
-            const spotInfo = await window.fetch(`http://localhost:3000/spotifyInfo/?rTok=${rTok}`, {
+            const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
                 method: 'GET',
             })
 
@@ -67,7 +67,7 @@ function SongDisplay({ history }) {
     const prevSong = () => {
         prevCurrentSong(rTok)
         setTimeout(async () => {
-            const spotInfo = await window.fetch(`http://localhost:3000/spotifyInfo/?rTok=${rTok}`, {
+            const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
                 method: 'GET',
             })
 
