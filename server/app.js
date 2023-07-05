@@ -63,6 +63,10 @@ app.get('/', (req, res) => {
     res.send('HELLO WORD')
 })
 
+app.get('/test', (req, res) => {
+    res.send('HELLO TEST')
+})
+
 app.post('/accessTokenTest', (req, res) => {
     const refToken = req.body.refreshToken
 
