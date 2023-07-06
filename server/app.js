@@ -3,11 +3,16 @@ import cors from 'cors'
 import fetch from "node-fetch"
 import querystring from 'query-string'
 import { Buffer } from 'buffer'
+import path from "path"
+import { dirname } from "path"
+import { fileURLToPath } from 'url';
 
 const clientID = 'c0a1baade757484da9b2fd790d541f4f'
 const clientSecret = '7c4ad0165ce546e098b42e450be697ab'
 const TOKEN_URL = `https://accounts.spotify.com/api/token`
 const basicAuth = Buffer.from(`${clientID}:${clientSecret}`).toString('base64')
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename)
 
 const getAccessToken = async (refreshToken) => {
     const response = await fetch(TOKEN_URL, {
@@ -55,16 +60,20 @@ app.use(express.json())
 
 app.use(cors())
 
-app.use(express.static("dist"))
+app.use(express.static(path.join(__dirname, 'dist')))
 
-// app.use(express.urlencoded({ extended: false }))
 
 const PORT = process.env.PORT || 8080
+
 
 app.listen(PORT, () => {
     console.log('App listening on port' + PORT + '!')
 })
 
+app.get('/', async (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+    // console.log(__dirname)
+})
 
 app.get('/api/test', (req, res) => {
     res.send('HELLO TEST')
