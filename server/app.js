@@ -71,8 +71,8 @@ app.listen(PORT, () => {
 })
 
 app.get('/', async (req, res) => {
+    //console.log(__dirname)
     res.sendFile(path.join(__dirname, 'dist', 'index.html'))
-    // console.log(__dirname)
 })
 
 app.get('/api/test', (req, res) => {
