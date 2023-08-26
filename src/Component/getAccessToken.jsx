@@ -1,25 +1,28 @@
 import querystring from 'query-string'
 import { Buffer } from 'buffer'
-const clientID = import.meta.env.VITE_CLIENT_ID
-const clientSecret = import.meta.env.VITE_CLIENT_SECRET
 
 const TOKEN_URL = `https://accounts.spotify.com/api/token`
-const basicAuth = Buffer.from(`${clientID}:${clientSecret}`).toString('base64')
+const clientID = import.meta.env.VITE_CLIENT_ID
 
-const getAccessToken = async (refreshToken) => {
+
+const getAccessToken = async (refreshToken, setRefreshToken) => {
+
+    let body = new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: clientID,
+    });
+
     const response = await window.fetch(TOKEN_URL, {
         method: 'POST',
         headers: {
-            Authorization: `Basic ${basicAuth}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: querystring.stringify({
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken,
-        }),
+        body: body
     })
-
-    return response.json()
+    resp = await response.json()
+    setRefreshToken(resp.refresh_token)
+    return resp
 }
 
 export { getAccessToken }

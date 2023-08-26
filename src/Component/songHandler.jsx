@@ -1,7 +1,7 @@
 import { getSpotifyInfo } from "./hooks";
 
-const songHandler = async (refreshToken) => {
-    const resp = await getSpotifyInfo(refreshToken)
+const songHandler = async (refreshToken, setRefreshToken) => {
+    const resp = await getSpotifyInfo(refreshToken, setRefreshToken)
     if (resp.status === 204) {
         return undefined
     }

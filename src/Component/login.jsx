@@ -2,32 +2,37 @@ import { useEffect, useState } from 'react'
 import '../App.css'
 import { withRouter } from 'react-router-dom';
 import { Buffer } from 'buffer'
-async function Refresh_Key(code, URI, basicAuth) {
-    const tok = await window.fetch(`https://accounts.spotify.com/api/token`, {
-        method: 'POST',
-        headers: {
-            Authorization: `Basic ${basicAuth}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-            code: code,
-            redirect_uri: URI,
-            grant_type: 'authorization_code',
-        }),
-    }).then(resp => resp.json()).then(resp => resp.refresh_token).catch(error => console.log(error))
 
-    return tok
+function generateRandomString(length) {
+    let text = '';
+    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    for (let i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
 }
+
+async function generateCodeChallenge(codeVerifier) {
+    function base64encode(string) {
+        return btoa(String.fromCharCode.apply(null, new Uint8Array(string)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+    }
+
+    const encoder = new TextEncoder();
+    const data = encoder.encode(codeVerifier);
+    const digest = await window.crypto.subtle.digest('SHA-256', data);
+
+    return base64encode(digest);
+}
+
 
 
 function Login({ history }) {
     const clientID = import.meta.env.VITE_CLIENT_ID
-    const clientSecret = import.meta.env.VITE_CLIENT_SECRET
     const URI = import.meta.env.VITE_URI
-    const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
-    const responseType = "code"
-    const basicAuth = Buffer.from(`${clientID}:${clientSecret}`).toString('base64')
-    const loginURL = `${AUTH_ENDPOINT}?client_id=${clientID}&response_type=${responseType}&redirect_uri=${URI}&scope=user-read-currently-playing user-modify-playback-state`
 
     document.body.style.backgroundColor = '#242424'
 
@@ -35,20 +40,37 @@ function Login({ history }) {
     useEffect(() => {
 
         const wrapperfunc = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            let code = urlParams.get('code');
 
-            const authToken = window.location.href.toString().split('?')[1].split('=')[1]
-            const rToken = await Refresh_Key(authToken, URI, basicAuth)
+            let codeVerifier = localStorage.getItem('code_verifier');
 
-            // const resp = await window.fetch('http://localhost:3000/accessTokenTest', {
-            //     method: 'POST',
-            //     body: JSON.stringify({ refreshToken: rToken }),
-            //     headers: { 'Content-Type': 'application/json' }
-            // })
+            let body = new URLSearchParams({
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: URI,
+                client_id: clientID,
+                code_verifier: codeVerifier
+            });
 
-            // console.log(await resp.json())
-
-
-            history.push({ pathname: '/SongDisplay', state: rToken })
+            const response = fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: body
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('HTTP status ' + response.status);
+                    }
+                    return response.json();
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            const resp = await response
+            console.log(resp)
+            history.push({ pathname: '/SongDisplay', state: resp.refresh_token })
 
         }
 
@@ -58,13 +80,34 @@ function Login({ history }) {
 
     }, [])
 
+    function login() {
+        let codeVerifier = generateRandomString(128);
 
+        generateCodeChallenge(codeVerifier).then(codeChallenge => {
+            let state = generateRandomString(16);
+            let scope = 'user-read-currently-playing user-modify-playback-state';
+
+            localStorage.setItem('code_verifier', codeVerifier);
+
+            let args = new URLSearchParams({
+                response_type: 'code',
+                client_id: clientID,
+                scope: scope,
+                redirect_uri: URI,
+                state: state,
+                code_challenge_method: 'S256',
+                code_challenge: codeChallenge
+            });
+
+            window.location = 'https://accounts.spotify.com/authorize?' + args;
+        });
+    }
 
     return (
         <div>
             <h1>Spotify React App</h1>
             <br />
-            <a href={loginURL}>Login to Spotify</a>
+            <button onClick={login}>Login to spotify</button>
         </div >
 
     )

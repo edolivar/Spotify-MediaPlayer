@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { withRouter, useLocation } from 'react-router-dom';
-import { songHandler } from './songHandler';
 import { skipCurrentSong, prevCurrentSong, playSong, pauseSong } from './hooks';
 import { BiRightArrow, BiLeftArrow, BiPlayCircle, BiPlay } from "react-icons/bi";
+import { songHandler } from './songHandler';
 import MemoCanvas from './Canvas';
 
 
@@ -18,10 +18,10 @@ function SongDisplay({ history }) {
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-                method: 'GET',
-            })
-
+            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
+            //     method: 'GET',
+            // })
+            let spotInfo = await songHandler(rTok, setRefreshToken)
             setInfo(await spotInfo.json())
         }, 7500)
         return () => clearInterval(interval)
@@ -30,10 +30,10 @@ function SongDisplay({ history }) {
     useEffect(() => {
         const setUp = async () => {
             if (rTok !== undefined) {
-                const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-                    method: 'GET',
-                })
-
+                // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
+                //     method: 'GET',
+                // })
+                let spotInfo = await songHandler(rTok, setRefreshToken)
                 setInfo(await spotInfo.json())
             }
         }
@@ -43,34 +43,34 @@ function SongDisplay({ history }) {
     }, [songInfo, rTok])
 
     const skippingSong = () => {
-        skipCurrentSong(rTok)
+        skipCurrentSong(rTok, setRefreshToken)
         setTimeout(async () => {
-            const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-                method: 'GET',
-            })
-
+            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
+            //     method: 'GET',
+            // })
+            let spotInfo = await songHandler(rTok, setRefreshToken)
             setInfo(await spotInfo.json())
         }, 500);
     }
 
     const playpause = () => {
         if (songInfo.isPlaying) {
-            pauseSong(rTok)
+            pauseSong(rTok, setRefreshToken)
             setInfo({ ...songInfo, isPlaying: false })
         }
         else {
-            playSong(rTok)
+            playSong(rTok, setRefreshToken)
             setInfo({ ...songInfo, isPlaying: true })
         }
     }
 
     const prevSong = () => {
-        prevCurrentSong(rTok)
+        prevCurrentSong(rTok, setRefreshToken)
         setTimeout(async () => {
-            const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-                method: 'GET',
-            })
-
+            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
+            //     method: 'GET',
+            // })
+            let spotInfo = await songHandler(rTok, setRefreshToken)
             setInfo(await spotInfo.json())
         }, 500);
     }
