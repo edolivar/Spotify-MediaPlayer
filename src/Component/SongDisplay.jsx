@@ -13,6 +13,7 @@ function SongDisplay({ history }) {
     const [songInfo, setInfo] = useState()
 
     useEffect(() => {
+        console.log(location.state)
         setRefreshToken(location.state)
     }, [location])
 
