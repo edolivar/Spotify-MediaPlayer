@@ -4,75 +4,82 @@ import { skipCurrentSong, prevCurrentSong, playSong, pauseSong } from './hooks';
 import { BiRightArrow, BiLeftArrow, BiPlayCircle, BiPlay } from "react-icons/bi";
 import { songHandler } from './songHandler';
 import MemoCanvas from './Canvas';
+import { getAccessToken } from "./getAccessToken"
 
 
 function SongDisplay({ history }) {
 
     const location = useLocation()
-    const [rTok, setRefreshToken] = useState();
-    const [songInfo, setInfo] = useState()
+    let [songInfo, setInfo] = useState()
 
     useEffect(() => {
-        console.log(location.state)
-        setRefreshToken(location.state)
+        localStorage.setItem('rTok', location.state)
     }, [location])
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-            //     method: 'GET',
-            // })
-            let spotInfo = await songHandler(rTok, setRefreshToken)
-            setInfo(await spotInfo.json())
+            let toks = await getAccessToken(localStorage.getItem('rTok'))
+            localStorage.setItem('rTok', toks.refresh_token)
+            let spotInfo = await songHandler(toks.access_token)
+            setInfo(spotInfo)
         }, 7500)
         return () => clearInterval(interval)
-    }, [rTok])
+    }, [])
 
     useEffect(() => {
         const setUp = async () => {
-            if (rTok !== undefined) {
-                // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-                //     method: 'GET',
-                // })
-                let spotInfo = await songHandler(rTok, setRefreshToken)
-                setInfo(await spotInfo.json())
+            if (localStorage.getItem('rTok')) {
+
+                let toks = await getAccessToken(localStorage.getItem('rTok'))
+                localStorage.setItem('rTok', toks.refresh_token)
+                let spotInfo = await songHandler(toks.access_token)
+                setInfo(spotInfo)
             }
         }
         if (!songInfo) {
             setUp()
         }
-    }, [songInfo, rTok])
+    }, [songInfo])
 
-    const skippingSong = () => {
-        skipCurrentSong(rTok, setRefreshToken)
+    const skippingSong = async () => {
+        let toks = await getAccessToken(localStorage.getItem('rTok'))
+        localStorage.setItem('rTok', toks.refresh_token)
+        skipCurrentSong(toks.access_token)
         setTimeout(async () => {
-            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-            //     method: 'GET',
-            // })
-            let spotInfo = await songHandler(rTok, setRefreshToken)
-            setInfo(await spotInfo.json())
+
+            let toks = await getAccessToken(localStorage.getItem('rTok'))
+            localStorage.setItem('rTok', toks.refresh_token)
+            let spotInfo = await songHandler(toks.access_token)
+            setInfo(spotInfo)
         }, 500);
     }
 
-    const playpause = () => {
+    const playpause = async () => {
         if (songInfo.isPlaying) {
-            pauseSong(rTok, setRefreshToken)
+            let toks = await getAccessToken(localStorage.getItem('rTok'))
+            localStorage.setItem('rTok', toks.refresh_token)
+            pauseSong(toks.access_token)
             setInfo({ ...songInfo, isPlaying: false })
         }
         else {
-            playSong(rTok, setRefreshToken)
+            let toks = await getAccessToken(localStorage.getItem('rTok'))
+            localStorage.setItem('rTok', toks.refresh_token)
+            playSong(toks.access_token)
             setInfo({ ...songInfo, isPlaying: true })
         }
     }
 
-    const prevSong = () => {
-        prevCurrentSong(rTok, setRefreshToken)
+    const prevSong = async () => {
+        let toks = await getAccessToken(localStorage.getItem('rTok'))
+        localStorage.setItem('rTok', toks.refresh_token)
+        prevCurrentSong(toks.access_token)
+
         setTimeout(async () => {
-            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-            //     method: 'GET',
-            // })
-            let spotInfo = await songHandler(rTok, setRefreshToken)
-            setInfo(await spotInfo.json())
+
+            let toks = await getAccessToken(localStorage.getItem('rTok'))
+            localStorage.setItem('rTok', toks.refresh_token)
+            let spotInfo = await songHandler(toks.access_token)
+            setInfo(spotInfo)
         }, 500);
     }
 

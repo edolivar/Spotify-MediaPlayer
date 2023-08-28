@@ -30,12 +30,5 @@ app.get('/api/test', (req, res) => {
     res.send('HELLO TEST')
 })
 
-app.post('/api/accessTokenTest', (req, res) => {
-    const refToken = req.body.refreshToken
-
-    //console.log('hello' + refToken)
-    getAccessToken(refToken).then(resp => res.send(resp))
-
-})
 
 

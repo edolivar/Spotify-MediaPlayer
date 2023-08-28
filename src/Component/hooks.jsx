@@ -1,48 +1,42 @@
-import { getAccessToken } from "./getAccessToken"
+const getSpotifyInfo = async (accessToken) => {
 
-const getSpotifyInfo = async (refreshToken, setRefreshToken) => {
-    const { access_token: token } = await getAccessToken(refreshToken, setRefreshToken)
-    const resp = window.fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
+    let resp = await window.fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${accessToken}` }
     })
+    resp = await resp.json()
     return resp
 }
 
-const skipCurrentSong = async (refreshToken, setRefreshToken) => {
-    const { access_token: token } = await getAccessToken(refreshToken, setRefreshToken)
-    const resp = window.fetch('https://api.spotify.com/v1/me/player/next', {
+const skipCurrentSong = async (accessToken) => {
+    let resp = window.fetch('https://api.spotify.com/v1/me/player/next', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${accessToken}` }
     })
-    return resp
+
 }
 
-const prevCurrentSong = async (refreshToken, setRefreshToken) => {
-    const { access_token: token } = await getAccessToken(refreshToken, setRefreshToken)
-    const resp = window.fetch('https://api.spotify.com/v1/me/player/previous', {
+const prevCurrentSong = async (accessToken) => {
+    let resp = window.fetch('https://api.spotify.com/v1/me/player/previous', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${accessToken}` }
     })
-    return resp
 }
 
-const pauseSong = async (refreshToken, setRefreshToken) => {
-    const { access_token: token } = await getAccessToken(refreshToken, setRefreshToken)
-    const resp = window.fetch('https://api.spotify.com/v1/me/player/pause', {
+const pauseSong = async (accessToken) => {
+    let resp = window.fetch('https://api.spotify.com/v1/me/player/pause', {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${accessToken}` }
     })
-    return resp
+
 }
 
-const playSong = async (refreshToken, setRefreshToken) => {
-    const { access_token: token } = await getAccessToken(refreshToken, setRefreshToken)
-    const resp = window.fetch('https://api.spotify.com/v1/me/player/play', {
+const playSong = async (accessToken) => {
+    let resp = window.fetch('https://api.spotify.com/v1/me/player/play', {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${accessToken}` }
     })
-    return resp
+
 }
 
 

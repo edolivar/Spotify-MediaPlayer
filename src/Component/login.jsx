@@ -13,6 +13,7 @@ function generateRandomString(length) {
     return text;
 }
 
+
 async function generateCodeChallenge(codeVerifier) {
     function base64encode(string) {
         return btoa(String.fromCharCode.apply(null, new Uint8Array(string)))
@@ -53,23 +54,15 @@ function Login({ history }) {
                 code_verifier: codeVerifier
             });
 
-            const response = fetch('https://accounts.spotify.com/api/token', {
+            let resp = await fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: body
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('HTTP status ' + response.status);
-                    }
-                    return response.json();
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
-            const resp = await response
-            console.log(resp)
+            resp = await resp.json()
+            //getting the token: VERIFIED
             history.push({ pathname: '/SongDisplay', state: resp.refresh_token })
 
         }
