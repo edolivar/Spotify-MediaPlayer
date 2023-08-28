@@ -5,6 +5,7 @@ const songHandler = async (refreshToken, setRefreshToken) => {
     if (resp.status === 204) {
         return undefined
     }
+    console.log(resp)
     const song = await resp.json()
     const isPlaying = song.is_playing
     const title = song.item.name
