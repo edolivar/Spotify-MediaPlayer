@@ -33,7 +33,7 @@ async function generateCodeChallenge(codeVerifier) {
 
 function Login({ history }) {
     const clientID = import.meta.env.VITE_CLIENT_ID
-    const URI = import.meta.env.VITE_URI
+    const URI = 'https://spotify-mediaplayer-edolivar.onrender.com'
 
     document.body.style.backgroundColor = '#242424'
 
