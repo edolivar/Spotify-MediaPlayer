@@ -1,7 +1,9 @@
 import { getSpotifyInfo } from "./hooks";
 
 const songHandler = async (accessToken) => {
-    const resp = await getSpotifyInfo(accessToken)
+    const URI = import.meta.env.VITE_URI
+    let resp = await window.fetch(`${URI}api/currently-playing/?accessToken=${accessToken}`, { method: 'GET' }).then(resp => { return resp.json() })
+
     if (resp.status === 204) {
         return undefined
     }
