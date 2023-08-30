@@ -16,7 +16,7 @@ function SongDisplay({ history }) {
 
     async function getRefreshedTokens() {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/refreshTokens/?refreshToken=${localStorage.getItem('rTok')}`, { method: 'GET' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/refreshTokens/?refreshToken=${localStorage.getItem('rTok')}`, { method: 'GET' }).then(resp => { return resp.json() })
 
         localStorage.setItem('rTok', toks.refresh_token)
         return toks
