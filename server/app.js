@@ -26,9 +26,9 @@ app.get('/', async (req, res) => {
 
 
 app.get('/api/refreshTokens', async (req, res) => {
-    let refreshToken = req.query.refreshToken
+    const { refreshToken } = req.query
 
-    let body = new URLSearchParams({
+    const body = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
         client_id: clientID,
@@ -39,15 +39,28 @@ app.get('/api/refreshTokens', async (req, res) => {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: body
+        body
     })
     response = await response.json()
     res.send(response)
 
 })
 
+app.get('/api/user', async (req, res) => {
+    const { accessToken } = req.query
+    
+    let resp = await fetch(`https://api.spotify.com/v1/me`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${accessToken}` }
+    })
+    resp = await resp.json()
+    console.log(resp)
+
+    res.send(resp)
+})
+
 app.get('/api/currently-playing', async (req, res) => {
-    let accessToken = req.query.accessToken
+    const { accessToken } = req.query
 
     let resp = await fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
         method: 'GET',
@@ -56,19 +69,16 @@ app.get('/api/currently-playing', async (req, res) => {
     resp = await resp.json()
     const isPlaying = resp.is_playing
     const title = resp.item.name
-    const artist = resp.item.artists.map(_artist => _artist.name).join(', ')
+    const artist = resp.item.artists.map(artist => artist.name).join(', ')
     const album = resp.item.album.name
     const albumImageUrl = resp.item.album.images[0].url
 
-
-
     res.send({ isPlaying, title, artist, album, albumImageUrl })
-
 
 })
 
 app.post('/api/skip', async (req, res) => {
-    let accessToken = req.query.accessToken
+    const { accessToken } = req.query
 
     await fetch('https://api.spotify.com/v1/me/player/next', {
         method: 'POST',
@@ -80,7 +90,7 @@ app.post('/api/skip', async (req, res) => {
 })
 
 app.post('/api/prev', async (req, res) => {
-    let accessToken = req.query.accessToken
+    const { accessToken } = req.query
 
     await fetch('https://api.spotify.com/v1/me/player/previous', {
         method: 'POST',
@@ -92,7 +102,7 @@ app.post('/api/prev', async (req, res) => {
 })
 
 app.post('/api/pause', async (req, res) => {
-    let accessToken = req.query.accessToken
+    const { accessToken } = req.query
 
     await fetch('https://api.spotify.com/v1/me/player/pause', {
         method: 'PUT',
@@ -103,7 +113,7 @@ app.post('/api/pause', async (req, res) => {
 })
 
 app.post('/api/play', async (req, res) => {
-    let accessToken = req.query.accessToken
+    const { accessToken } = req.query
 
     await fetch('https://api.spotify.com/v1/me/player/play', {
         method: 'PUT',
@@ -113,9 +123,6 @@ app.post('/api/play', async (req, res) => {
     res.send({ status: 200 })
 })
 
-app.get('/api/test', (req, res) => {
-    res.send('HELLO TEST')
-})
 
 
 

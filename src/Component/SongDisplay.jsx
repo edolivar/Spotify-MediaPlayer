@@ -16,15 +16,14 @@ function SongDisplay({ history }) {
 
     async function getRefreshedTokens() {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/refreshTokens/?refreshToken=${localStorage.getItem('rTok')}`, { method: 'GET' }).then(resp => { return resp.json() })
-
+        let toks = await window.fetch(`${URI}/api/refreshTokens/?refreshToken=${localStorage.getItem('rTok')}`, { method: 'GET' }).then(resp => { return resp.json() })
         localStorage.setItem('rTok', toks.refresh_token)
         return toks
     }
 
     async function songHandler(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}api/currently-playing/?accessToken=${access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}/api/currently-playing/?accessToken=${access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
 
         return toks
 
@@ -32,34 +31,34 @@ function SongDisplay({ history }) {
 
     async function skipCurrentSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}api/skip/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}/api/skip/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
     async function prevCurrentSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}api/prev/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}/api/prev/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
     async function playSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}api/play/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}/api/play/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
 
     async function pauseSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}api/pause/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}/api/pause/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
 
     useEffect(() => {
         localStorage.setItem('rTok', location.state)
-    }, [location])
+    }, [])
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            let toks = await getRefreshedTokens()
-            let spotInfo = await songHandler(toks.access_token)
+            const toks = await getRefreshedTokens()
+            const spotInfo = await songHandler(toks.access_token)
             setInfo(spotInfo)
         }, 7500)
         return () => clearInterval(interval)
@@ -69,8 +68,8 @@ function SongDisplay({ history }) {
         const setUp = async () => {
             if (localStorage.getItem('rTok')) {
 
-                let toks = await getRefreshedTokens()
-                let spotInfo = await songHandler(toks.access_token)
+                const toks = await getRefreshedTokens()
+                const spotInfo = await songHandler(toks.access_token)
                 setInfo(spotInfo)
             }
         }
@@ -80,12 +79,12 @@ function SongDisplay({ history }) {
     }, [songInfo])
 
     const skippingSong = async () => {
-        let toks = await getRefreshedTokens()
+        const toks = await getRefreshedTokens()
         skipCurrentSong(toks.access_token)
         setTimeout(async () => {
 
-            let toks = await getRefreshedTokens()
-            let spotInfo = await songHandler(toks.access_token)
+            const toks = await getRefreshedTokens()
+            const spotInfo = await songHandler(toks.access_token)
             setInfo(spotInfo)
         }, 500);
     }
@@ -104,13 +103,13 @@ function SongDisplay({ history }) {
     }
 
     const prevSong = async () => {
-        let toks = await getRefreshedTokens()
+        const toks = await getRefreshedTokens()
         prevCurrentSong(toks.access_token)
 
         setTimeout(async () => {
 
-            let toks = await getRefreshedTokens()
-            let spotInfo = await songHandler(toks.access_token)
+            const toks = await getRefreshedTokens()
+            const spotInfo = await songHandler(toks.access_token)
             setInfo(spotInfo)
         }, 500);
     }

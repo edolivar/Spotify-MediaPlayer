@@ -33,7 +33,7 @@ async function generateCodeChallenge(codeVerifier) {
 
 function Login({ history }) {
     const clientID = import.meta.env.VITE_CLIENT_ID
-    const URI = 'https://spotify-mediaplayer-edolivar.onrender.com'
+    const URI = import.meta.env.VITE_URI
 
     document.body.style.backgroundColor = '#242424'
 
@@ -63,7 +63,12 @@ function Login({ history }) {
             })
             resp = await resp.json()
             //getting the token: VERIFIED
-            history.push({ pathname: '/SongDisplay', state: resp.refresh_token })
+
+            //before moving to songdisplay I need to implement contacting the database for user data!
+            //Todo: find a way to store user id by hitting the https://api.spotify.com/v1/me 
+            let toks = await window.fetch(`${URI}/api/refreshTokens/?refreshToken=${resp.refresh_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+            let user = await window.fetch(`${URI}/api/user/?accessToken=${toks.access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+            history.push({ pathname: '/SongDisplay', state: toks.refresh_token })
 
         }
 
@@ -78,7 +83,7 @@ function Login({ history }) {
 
         generateCodeChallenge(codeVerifier).then(codeChallenge => {
             let state = generateRandomString(16);
-            let scope = 'user-read-currently-playing user-modify-playback-state';
+            let scope = 'user-read-currently-playing user-modify-playback-state user-read-private user-read-email';
 
             localStorage.setItem('code_verifier', codeVerifier);
 
