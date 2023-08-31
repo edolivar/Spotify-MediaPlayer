@@ -24,7 +24,7 @@ function SongDisplay({ history }) {
 
     async function songHandler(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/currently-playing/?accessToken=${access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/currently-playing/?accessToken=${access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
 
         return toks
 
@@ -32,23 +32,23 @@ function SongDisplay({ history }) {
 
     async function skipCurrentSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/skip/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/skip/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
     async function prevCurrentSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/prev/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/prev/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
     async function playSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/play/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/play/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
 
     async function pauseSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/pause/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/pause/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
 
