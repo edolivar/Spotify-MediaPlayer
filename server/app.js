@@ -23,6 +23,7 @@ app.get('/', async (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
+
 app.get('/api/refreshTokens', async (req, res) => {
     let refreshToken = req.query.refreshToken
 
