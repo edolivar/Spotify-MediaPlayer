@@ -66,9 +66,10 @@ function Login({ history }) {
 
             //before moving to songdisplay I need to implement contacting the database for user data!
             //Todo: find a way to store user id by hitting the https://api.spotify.com/v1/me 
-            let toks = await window.fetch(`${URI}api/refreshTokens/?refreshToken=${resp.refresh_token}`, { method: 'GET' }).then(resp => { return resp.json() })
-            let user = await window.fetch(`${URI}api/user/?accessToken=${toks.access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
-            history.push({ pathname: '/SongDisplay', state: toks.refresh_token })
+            const toks = await window.fetch(`${URI}/api/refreshTokens/?refreshToken=${resp.refresh_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+            const user = await window.fetch(`${URI}/api/user/?accessToken=${toks.access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+        
+            history.push({ pathname: '/SongDisplay', state: {refresh_token: toks.refresh_token, user_id: user.id} })
 
         }
 

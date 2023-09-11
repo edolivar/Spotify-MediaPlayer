@@ -5,10 +5,11 @@ import fetch from 'node-fetch';
 import { dirname } from "path"
 import { fileURLToPath } from 'url';
 
+
 const clientID = 'c0a1baade757484da9b2fd790d541f4f'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename)
-
+const DB_URL = 'http://localhost:8000'
 
 const app = express()
 
@@ -54,26 +55,58 @@ app.get('/api/user', async (req, res) => {
         headers: { Authorization: `Bearer ${accessToken}` }
     })
     resp = await resp.json()
-    console.log(resp)
+    
+    resp = await fetch(`${DB_URL}/db/addUser/?userName=${resp.id}`, {
+        method: 'POST'
+    }).then( resp => resp.json())
+    
+    res.send(resp)
+})
 
+app.get('/api/addSong', async (req, res) => {
+   
+    const songName = req.query.songName 
+    const id = req.query.id
+
+    if(!id || !songName) {
+        return res.status(400).json({ message: "songName or id is missing" })
+    }
+
+    const resp = await fetch(`${DB_URL}/db/addSong/?songName=${songName}&id=${id}`, { method: 'POST'}).then(resp => resp.json())
+
+    res.send(resp)
+
+})
+
+
+app.get('/api/top5', async (req, res) => {
+    const { id } = req.query
+    let resp = await fetch(`${DB_URL}/db/top5/?id=${id}`).then(resp => resp.json())
     res.send(resp)
 })
 
 app.get('/api/currently-playing', async (req, res) => {
     const { accessToken } = req.query
 
-    let resp = await fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${accessToken}` }
-    })
-    resp = await resp.json()
-    const isPlaying = resp.is_playing
-    const title = resp.item.name
-    const artist = resp.item.artists.map(artist => artist.name).join(', ')
-    const album = resp.item.album.name
-    const albumImageUrl = resp.item.album.images[0].url
+    
+    try {
+        let resp = await fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
 
-    res.send({ isPlaying, title, artist, album, albumImageUrl })
+        resp = await resp.json()
+        const isPlaying = resp.is_playing
+        const title = resp.item.name
+        const artist = resp.item.artists.map(artist => artist.name).join(', ')
+        const album = resp.item.album.name
+        const albumImageUrl = resp.item.album.images[0].url
+        res.send({ isPlaying, title, artist, album, albumImageUrl })
+    } catch (e) {
+        res.send({error : 'SOMETHING WRONG!!!!'})
+    }
+    
+    
 
 })
 
@@ -122,7 +155,6 @@ app.post('/api/play', async (req, res) => {
 
     res.send({ status: 200 })
 })
-
 
 
 
