@@ -17,14 +17,14 @@ function SongDisplay() {
 
 
     async function getRefreshedTokens() {
-        let toks = await window.fetch(`${URI}/api/refreshTokens/?refreshToken=${localStorage.getItem('rTok')}`, { method: 'GET' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/refreshTokens/?refreshToken=${localStorage.getItem('rTok')}`, { method: 'GET' }).then(resp => { return resp.json() })
         localStorage.setItem('rTok', toks.refresh_token)
         return toks
     }
 
     async function songHandler(access_token) {
         
-        let toks = await window.fetch(`${URI}/api/currently-playing/?accessToken=${access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/currently-playing/?accessToken=${access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
     
         return toks
 
@@ -32,23 +32,23 @@ function SongDisplay() {
 
     async function skipCurrentSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/skip/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/skip/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
     async function prevCurrentSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/prev/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/prev/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
     async function playSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/play/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/play/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
 
     async function pauseSong(access_token) {
         const URI = import.meta.env.VITE_URI
-        let toks = await window.fetch(`${URI}/api/pause/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+        let toks = await window.fetch(`${URI}api/pause/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
     }
 
 
@@ -67,7 +67,7 @@ function SongDisplay() {
                 } else {
                     const temp = localStorage.getItem('oldsong')
                     if(temp != spotInfo.title) {
-                        let resp = await window.fetch(`${URI}/api/addSong/?songName=${temp}&id=${localStorage.getItem('user_id')}`, { method: 'GET' }).then(resp => resp.json())
+                        let resp = await window.fetch(`${URI}api/addSong/?songName=${temp}&id=${localStorage.getItem('user_id')}`, { method: 'GET' }).then(resp => resp.json())
                         console.log(resp)
                     }
             
