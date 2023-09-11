@@ -7,7 +7,7 @@ function LeaderBoard({id}) {
 
     useEffect(() => {
         const getSongs = async () => {
-            const resp = await window.fetch(`${URI}/api/top5/?id=${localStorage.getItem('user_id')}`).then(resp => resp.json())
+            const resp = await window.fetch(`${URI}api/top5/?id=${localStorage.getItem('user_id')}`).then(resp => resp.json())
             setSongs(resp)
         }
         getSongs()
@@ -15,7 +15,7 @@ function LeaderBoard({id}) {
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            const resp = await window.fetch(`${URI}/api/top5/?id=${localStorage.getItem('user_id')}`).then(resp => resp.json())
+            const resp = await window.fetch(`${URI}api/top5/?id=${localStorage.getItem('user_id')}`).then(resp => resp.json())
             setSongs(resp)
         }, 15000)
         return () => clearInterval(interval)
