@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 const clientID = 'c0a1baade757484da9b2fd790d541f4f'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename)
-const DB_URL = 'http://localhost:8000'
+const DB_URL = 'https://tsdb.onrender.com'
 
 const app = express()
 
