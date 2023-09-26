@@ -1,78 +1,134 @@
 import { useEffect, useState } from 'react'
-import { withRouter, useLocation } from 'react-router-dom';
-import { skipCurrentSong, prevCurrentSong, playSong, pauseSong } from './hooks';
+import { withRouter, useLocation, useHistory } from 'react-router-dom';
+
 import { BiRightArrow, BiLeftArrow, BiPlayCircle, BiPlay } from "react-icons/bi";
-import { songHandler } from './songHandler';
 import MemoCanvas from './Canvas';
+import LeaderBoard from './LeaderBoard';
 
 
-function SongDisplay({ history }) {
+
+function SongDisplay() {
+
+    const history = useHistory()
 
     const location = useLocation()
-    const [rTok, setRefreshToken] = useState();
-    const [songInfo, setInfo] = useState()
+    let [songInfo, setInfo] = useState()
+    const URI = import.meta.env.VITE_URI
+
+
+    async function getRefreshedTokens() {
+        let toks = await window.fetch(`${URI}api/refreshTokens/?refreshToken=${localStorage.getItem('rTok')}`, { method: 'GET' }).then(resp => { return resp.json() })
+        localStorage.setItem('rTok', toks.refresh_token)
+        return toks
+    }
+
+    async function songHandler(access_token) {
+        
+        let toks = await window.fetch(`${URI}api/currently-playing/?accessToken=${access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+    
+        return toks
+
+    }
+
+    async function skipCurrentSong(access_token) {
+        const URI = import.meta.env.VITE_URI
+        let toks = await window.fetch(`${URI}api/skip/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+    }
+
+    async function prevCurrentSong(access_token) {
+        const URI = import.meta.env.VITE_URI
+        let toks = await window.fetch(`${URI}api/prev/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+    }
+
+    async function playSong(access_token) {
+        const URI = import.meta.env.VITE_URI
+        let toks = await window.fetch(`${URI}api/play/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+    }
+
+
+    async function pauseSong(access_token) {
+        const URI = import.meta.env.VITE_URI
+        let toks = await window.fetch(`${URI}api/pause/?accessToken=${access_token}`, { method: 'POST' }).then(resp => { return resp.json() })
+    }
+
 
     useEffect(() => {
-        console.log(location.state)
-        setRefreshToken(location.state)
-    }, [location])
+        localStorage.setItem('rTok', location.state.refresh_token)
+        localStorage.setItem('user_id', location.state.user_id)
+    }, [])
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-            //     method: 'GET',
-            // })
-            let spotInfo = await songHandler(rTok, setRefreshToken)
-            setInfo(await spotInfo.json())
+            const toks = await getRefreshedTokens()
+            const spotInfo = await songHandler(toks.access_token)
+            
+             if(spotInfo.hasOwnProperty('error')) {
+                    setInfo(undefined)
+                } else {
+                    const temp = localStorage.getItem('oldsong')
+                    if(temp != spotInfo.title) {
+                        let resp = await window.fetch(`${URI}api/addSong/?songName=${temp}&id=${localStorage.getItem('user_id')}`, { method: 'GET' }).then(resp => resp.json())
+                        console.log(resp)
+                    }
+            
+                    localStorage.setItem('oldsong', spotInfo.title)
+                    setInfo(spotInfo)
+                }
         }, 7500)
         return () => clearInterval(interval)
-    }, [rTok])
+    }, [])
 
     useEffect(() => {
         const setUp = async () => {
-            if (rTok !== undefined) {
-                // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-                //     method: 'GET',
-                // })
-                let spotInfo = await songHandler(rTok, setRefreshToken)
-                setInfo(await spotInfo.json())
+            if (localStorage.getItem('rTok')) {
+                const toks = await getRefreshedTokens()
+                const spotInfo = await songHandler(toks.access_token)
+                if(spotInfo.hasOwnProperty('error')) {
+                    setInfo(undefined)
+                } else {
+                    localStorage.setItem('oldsong', spotInfo.title)            
+                    setInfo(spotInfo)
+                }
             }
         }
         if (!songInfo) {
             setUp()
         }
-    }, [songInfo, rTok])
+    }, [songInfo])
 
-    const skippingSong = () => {
-        skipCurrentSong(rTok, setRefreshToken)
+    const skippingSong = async () => {
+        const toks = await getRefreshedTokens()
+        skipCurrentSong(toks.access_token)
         setTimeout(async () => {
-            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-            //     method: 'GET',
-            // })
-            let spotInfo = await songHandler(rTok, setRefreshToken)
-            setInfo(await spotInfo.json())
+
+            const toks = await getRefreshedTokens()
+            const spotInfo = await songHandler(toks.access_token)
+            setInfo(spotInfo)
         }, 500);
     }
 
-    const playpause = () => {
+    const playpause = async () => {
         if (songInfo.isPlaying) {
-            pauseSong(rTok, setRefreshToken)
+            let toks = await getRefreshedTokens()
+            pauseSong(toks.access_token)
             setInfo({ ...songInfo, isPlaying: false })
         }
         else {
-            playSong(rTok, setRefreshToken)
+            let toks = await getRefreshedTokens()
+            playSong(toks.access_token)
             setInfo({ ...songInfo, isPlaying: true })
         }
     }
 
-    const prevSong = () => {
-        prevCurrentSong(rTok, setRefreshToken)
+    const prevSong = async () => {
+        const toks = await getRefreshedTokens()
+        prevCurrentSong(toks.access_token)
+
         setTimeout(async () => {
-            // const spotInfo = await window.fetch(`https://spotify-mediaplayer-edolivar.onrender.com/api/spotifyInfo/?rTok=${rTok}`, {
-            //     method: 'GET',
-            // })
-            let spotInfo = await songHandler(rTok, setRefreshToken)
-            setInfo(await spotInfo.json())
+
+            const toks = await getRefreshedTokens()
+            const spotInfo = await songHandler(toks.access_token)
+            setInfo(spotInfo)
         }, 500);
     }
 
@@ -103,10 +159,11 @@ function SongDisplay({ history }) {
                     <MemoCanvas url={songInfo.albumImageUrl} width='480px' height='480px'></MemoCanvas>
                     <h2>{songInfo.title}</h2>
                     <h2>{songInfo.artist}</h2>
+                    <LeaderBoard id={localStorage.getItem('user_id')}/>
                 </>
             }
         </>
     )
 }
 
-export default withRouter(SongDisplay)
+export default SongDisplay

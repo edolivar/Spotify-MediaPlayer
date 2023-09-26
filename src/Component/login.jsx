@@ -13,6 +13,7 @@ function generateRandomString(length) {
     return text;
 }
 
+
 async function generateCodeChallenge(codeVerifier) {
     function base64encode(string) {
         return btoa(String.fromCharCode.apply(null, new Uint8Array(string)))
@@ -53,24 +54,22 @@ function Login({ history }) {
                 code_verifier: codeVerifier
             });
 
-            const response = fetch('https://accounts.spotify.com/api/token', {
+            let resp = await fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: body
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('HTTP status ' + response.status);
-                    }
-                    return response.json();
-                }).catch(error => {
-                    console.error('Error:', error);
-                });
-            const resp = await response
-            console.log(resp)
-            history.push({ pathname: '/SongDisplay', state: resp.refresh_token })
+            resp = await resp.json()
+            //getting the token: VERIFIED
+
+            //before moving to songdisplay I need to implement contacting the database for user data!
+            //Todo: find a way to store user id by hitting the https://api.spotify.com/v1/me 
+            const toks = await window.fetch(`${URI}api/refreshTokens/?refreshToken=${resp.refresh_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+            const user = await window.fetch(`${URI}api/user/?accessToken=${toks.access_token}`, { method: 'GET' }).then(resp => { return resp.json() })
+        
+            history.push({ pathname: '/SongDisplay', state: {refresh_token: toks.refresh_token, user_id: user.id} })
 
         }
 
@@ -85,7 +84,7 @@ function Login({ history }) {
 
         generateCodeChallenge(codeVerifier).then(codeChallenge => {
             let state = generateRandomString(16);
-            let scope = 'user-read-currently-playing user-modify-playback-state';
+            let scope = 'user-read-currently-playing user-modify-playback-state user-read-private user-read-email';
 
             localStorage.setItem('code_verifier', codeVerifier);
 
